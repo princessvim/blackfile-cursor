@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+        body {
+            background-color: #000;
+			color: #eee;
+			font-family: Consolas, "Courier New", monospace;
+			min-height: 100vh;
+			margin: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding-bottom: 3.5em;
+			box-sizing: border-box;
+        }
+		.controls {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			padding: 0.75em 1.5em;
+			background: rgba(26, 26, 26, 0.7);
+			border-top: 1px solid #333;
+			backdrop-filter: blur(10px);
+			-webkit-backdrop-filter: blur(10px);
+			z-index: 30;
+			font-size: 12px;
+			display: flex;
+			flex-direction: column;
+			gap: 0.5em;
+		}
+		.controls-row {
+			display: flex;
+			align-items: center;
+			gap: 0.75em;
+			width: 100%;
+		}
+		content {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		#width-slider {
+			flex: 1;
+			min-width: 80px;
+		}
+		#highlight-input {
+			width: 6em;
+			background: #222;
+			color: #eee;
+			border: 1px solid #555;
+			border-radius: 3px;
+			padding: 2px 6px;
+			font-family: inherit;
+			font-size: inherit;
+		}
+		.code-editor {
+			position: relative;
+			--char-count: 67;
+			--char-fudge: 0.4ch;
+			width: calc(var(--char-count) * 1ch + var(--char-fudge) + 2em + 4px);
+			transform-origin: center;
+			z-index: 10;
+			transition: transform 260ms ease;
+		}
+        pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block {
+            margin: 0;
+			width: 100%;
+			height: 100%;
+			min-width: 20px;
+			padding: 1em;
+            border: 2px dashed #222;
+			border-radius: 6px;
+			color: #222;
+			font-family: Consolas, "Courier New", monospace;
+			font-size: 16px;
+			line-height: 1.45;
+			letter-spacing: 0;
+			font-kerning: none;
+			font-variant-ligatures: none;
+			overflow: hidden;
+			white-space: pre-wrap;
+			word-break: break-all;
+            line-break: anywhere;
+			overflow-wrap: anywhere;
+			pointer-events: none;
+			box-sizing: border-box;
+		}
+
+		#code-input {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			padding: 1em;
+			border: 2px dashed transparent;
+			border-radius: 6px;
+			background: transparent;
+			color: transparent;
+			caret-color: #e6e6e6;
+			font-family: Consolas, "Courier New", monospace;
+			font-size: 16px;
+			line-height: 1.45;
+			letter-spacing: 0;
+			font-kerning: none;
+			font-variant-ligatures: none;
+			overflow: hidden;
+			resize: none;
+			white-space: pre-wrap;
+			word-break: break-all;
+			line-break: anywhere;
+			overflow-wrap: anywhere;
+			outline: none;
+			box-sizing: border-box;
+		}
+
+		#code-input::selection {
+			background: rgba(0, 255, 170, 0.25);
+		}
+
+		#rotation-select {
+			background: #222;
+			color: #eee;
+			border: 1px solid #555;
+			border-radius: 3px;
+			padding: 2px 6px;
+			font-family: inherit;
+			font-size: inherit;
+		}
+		#font-size-slider {
+			width: 120px;
+		}
+		#font-size-label {
+			display: inline-block;
+			min-width: 110px;
+		}
+		#width-label {
+			display: inline-block;
+			width: 130px;
+		}
+		#reset-button {
+			margin-left: auto;
+			background: #222;
+			color: #eee;
+			border: 1px solid #666;
+			border-radius: 3px;
+			padding: 2px 10px;
+			font-family: inherit;
+			font-size: inherit;
+			cursor: pointer;
+		}
+		#reverse-button {
+			background: #222;
+			color: #eee;
+			border: 1px solid #666;
+			border-radius: 3px;
+			padding: 2px 10px;
+			font-family: inherit;
+			font-size: inherit;
+			cursor: pointer;
+		}
+		.control-toggle {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.35em;
+		}
+
+		.code-block .highlighted {
+			color: #00ffaa;
+			font-weight: inherit;
+		}
+		.code-editor.invert-colors .code-block {
+			color: #00ffaa;
+		}
+		.code-editor.invert-colors .code-block .highlighted {
+			color: #222;
+		}
+	</style>
+</head>
+<body>
+    <content>
+        <div class="controls">
+			<div class="controls-row">
+				<label id="width-label" for="width-slider">Width: <span id="width-value">67</span> letters</label>
+				<input id="width-slider" type="range" min="10" max="400" value="67">
+				<label for="highlight-input">Highlight character(s):</label>
+				<input id="highlight-input" type="text" value="/" placeholder="chars to highlight">
+			</div>
+			<div class="controls-row">
+				<label id="font-size-label" for="font-size-slider">Font size: <span id="font-size-value">16</span>px</label>
+				<input id="font-size-slider" type="range" min="6" max="48" value="16">
+				<label for="rotation-select">Rotate:</label>
+				<select id="rotation-select">
+					<option value="0">0</option>
+					<option value="90">90</option>
+					<option value="180">180</option>
+					<option value="270">270</option>
+				</select>
+				<label class="control-toggle" for="mirror-horizontal">
+					<input id="mirror-horizontal" type="checkbox">
+					Mirror horizontal
+				</label>
+				<label class="control-toggle" for="mirror-vertical">
+					<input id="mirror-vertical" type="checkbox">
+					Mirror vertical
+				</label>
+				<label class="control-toggle" for="invert-colors">
+					<input id="invert-colors" type="checkbox">
+					Invert colors
+				</label>
+				<button id="reverse-button" type="button">Reverse text</button>
+				<button id="reset-button" type="button">Reset</button>
+			</div>
+        </div>
+		<div class="code-editor">
+			<pre class="code-block" aria-hidden="true"><code></code></pre>
+			<textarea id="code-input" spellcheck="false" aria-label="Editable code text"></textarea>
+		</div>
+    </content>
+    
+    <script>
+        const text = "data:image/x-icon;base64,AAACAAEAICACAAAAAAgIAAAFgAAAEgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwcHAAAAAAAADw8PAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADw8PAAAAAAAABwcHAAAAAAAAAAAAD//////////8AAAAAAAD/////////8AAAAAAADwAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPgAAAP//8AAAAAAAP////////////////8AAAAAAAD/////////8AAAAAAA//////////8AAAAAAAAPAAAAAAAA8AAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAAA8AAAAAAA//////////8AAA==";
+		
+        const codeEditor = document.querySelector(".code-editor");
+		const codeBlock = document.querySelector(".code-block");
+		const codeInput = document.querySelector("#code-input");
+		const widthSlider = document.querySelector("#width-slider");
+		const widthValue = document.querySelector("#width-value");
+		const highlightInput = document.querySelector("#highlight-input");
+		const fontSizeSlider = document.querySelector("#font-size-slider");
+		const fontSizeValue = document.querySelector("#font-size-value");
+		const rotationSelect = document.querySelector("#rotation-select");
+		const mirrorHorizontal = document.querySelector("#mirror-horizontal");
+		const mirrorVertical = document.querySelector("#mirror-vertical");
+		const invertColors = document.querySelector("#invert-colors");
+		const reverseButton = document.querySelector("#reverse-button");
+		const resetButton = document.querySelector("#reset-button");
+		const codeElement = document.querySelector(".code-block code");
+		const defaults = {
+			width: "67",
+			highlight: "/",
+			fontSize: "16",
+			rotation: "0",
+			mirrorHorizontal: false,
+			mirrorVertical: false,
+			invertColors: false
+		};
+
+		if (codeInput) {
+			codeInput.value = text;
+		}
+        // data:image/x-icon;base64,AAACAAEAICACAAAAAAgIAAAFgAAAEgAAACgAAAAgAA
+
+		if (codeEditor && widthSlider && widthValue) {
+			widthSlider.addEventListener("input", () => {
+				codeEditor.style.setProperty("--char-count", widthSlider.value);
+				widthValue.textContent = widthSlider.value;
+				syncEditorHeight();
+				renderCode();
+			});
+		}
+
+		function syncEditorHeight() {
+			if (!codeEditor || !codeInput) return;
+			codeInput.style.height = "0px";
+			const nextHeight = `${codeInput.scrollHeight}px`;
+			codeInput.style.height = nextHeight;
+			codeEditor.style.height = nextHeight;
+		}
+
+		function applyTransform() {
+			if (!codeEditor) return;
+			const rotation = rotationSelect ? Number(rotationSelect.value) : 0;
+			const scaleX = mirrorHorizontal && mirrorHorizontal.checked ? -1 : 1;
+			const scaleY = mirrorVertical && mirrorVertical.checked ? -1 : 1;
+			codeEditor.style.transform = `rotate(${rotation}deg) scale(${scaleX}, ${scaleY})`;
+		}
+
+		function applyFontSize() {
+			if (!fontSizeSlider || !fontSizeValue || !codeBlock || !codeInput || !codeEditor) return;
+			const size = `${fontSizeSlider.value}px`;
+			codeEditor.style.fontSize = size;
+			codeBlock.style.fontSize = size;
+			codeInput.style.fontSize = size;
+			fontSizeValue.textContent = fontSizeSlider.value;
+			syncEditorHeight();
+		}
+
+		function renderCode() {
+			if (!codeElement || !codeInput) return;
+			const highlightChars = new Set(highlightInput ? highlightInput.value : "/");
+			const fragment = document.createDocumentFragment();
+
+			for (const char of codeInput.value) {
+				if (highlightChars.has(char)) {
+					const highlightedChar = document.createElement("span");
+					highlightedChar.className = "highlighted";
+					highlightedChar.textContent = char;
+					fragment.appendChild(highlightedChar);
+				} else {
+					fragment.appendChild(document.createTextNode(char));
+				}
+			}
+
+			codeElement.textContent = "";
+			codeElement.appendChild(fragment);
+		}
+
+		if (highlightInput) {
+			highlightInput.addEventListener("input", () => {
+				renderCode();
+				syncEditorHeight();
+			});
+		}
+		if (fontSizeSlider) {
+			fontSizeSlider.addEventListener("input", applyFontSize);
+		}
+		if (rotationSelect) {
+			rotationSelect.addEventListener("change", applyTransform);
+		}
+		if (mirrorHorizontal) {
+			mirrorHorizontal.addEventListener("change", applyTransform);
+		}
+		if (mirrorVertical) {
+			mirrorVertical.addEventListener("change", applyTransform);
+		}
+		if (invertColors && codeEditor) {
+			invertColors.addEventListener("change", () => {
+				codeEditor.classList.toggle("invert-colors", invertColors.checked);
+			});
+		}
+		if (codeInput && codeBlock) {
+			codeInput.addEventListener("input", () => {
+				renderCode();
+				syncEditorHeight();
+			});
+		}
+		if (reverseButton) {
+			reverseButton.addEventListener("click", () => {
+				if (!codeInput) return;
+				codeInput.value = [...codeInput.value].reverse().join("");
+				renderCode();
+				syncEditorHeight();
+			});
+		}
+		if (resetButton) {
+			resetButton.addEventListener("click", () => {
+				if (widthSlider && widthValue && codeEditor) {
+					widthSlider.value = defaults.width;
+					widthValue.textContent = defaults.width;
+					codeEditor.style.setProperty("--char-count", defaults.width);
+				}
+				if (highlightInput) {
+					highlightInput.value = defaults.highlight;
+				}
+				if (codeInput) {
+					codeInput.value = text;
+				}
+				if (fontSizeSlider) {
+					fontSizeSlider.value = defaults.fontSize;
+				}
+				if (rotationSelect) {
+					rotationSelect.value = defaults.rotation;
+				}
+				if (mirrorHorizontal) {
+					mirrorHorizontal.checked = defaults.mirrorHorizontal;
+				}
+				if (mirrorVertical) {
+					mirrorVertical.checked = defaults.mirrorVertical;
+				}
+				if (invertColors && codeEditor) {
+					invertColors.checked = defaults.invertColors;
+					codeEditor.classList.toggle("invert-colors", defaults.invertColors);
+				}
+
+				applyFontSize();
+				applyTransform();
+				renderCode();
+				syncEditorHeight();
+			});
+		}
+
+		renderCode();
+		applyFontSize();
+		syncEditorHeight();
+		applyTransform();
+	</script>
+</body>
+</html>
