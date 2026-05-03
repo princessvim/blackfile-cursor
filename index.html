@@ -44,6 +44,13 @@
 			gap: 0.75em;
 			width: 100%;
 		}
+		.controls-sep {
+			width: 2px;
+			align-self: stretch;
+			background: var(--border-dim);
+			flex-shrink: 0;
+			margin: 0 0.1em;
+		}
 		content {
 			display: flex;
 			flex: 1;
@@ -91,18 +98,23 @@
 			font-size: inherit;
 		}
 		#font-size-slider {
-			width: 120px;
+			width: 90px;
 		}
 		#font-size-label {
 			display: inline-block;
-			min-width: 110px;
+			min-width: 90px;
+		}
+		#font-size-value {
+			font-weight: bold;
 		}
 		#width-label {
 			display: inline-block;
-			width: 130px;
+			width: 100px;
+		}
+		#width-value {
+			font-weight: bold;
 		}
 		#reset-button {
-			margin-left: auto;
 			background: var(--surface-ui);
 			color: var(--text);
 			border: 1px solid var(--border-ui);
@@ -202,33 +214,36 @@
 <body>
     <header>
 			<div class="controls-row">
-				<label id="width-label" for="width-slider">Width: <span id="width-value">67</span> letters</label>
+				<label id="width-label" for="width-slider">Row width: <span id="width-value">67</span></label>
 				<input id="width-slider" type="range" min="10" max="400" value="67">
-				<label for="highlight-input">Highlight character(s):</label>
-				<input id="highlight-input" type="text" value="/" placeholder="chars to highlight">
+				<div class="controls-sep"></div>
+				<label id="font-size-label" for="font-size-slider">Font size: <span id="font-size-value">18</span></label>
+				<input id="font-size-slider" type="range" min="6" max="48" value="18">
+				<div class="controls-sep"></div>
+				<label for="highlight-input">Highlight:</label>
+				<input id="highlight-input" type="text" value="/" placeholder="chars">
 			</div>
 			<div class="controls-row">
-				<label id="font-size-label" for="font-size-slider">Font size: <span id="font-size-value">18</span>px</label>
-				<input id="font-size-slider" type="range" min="6" max="48" value="18">
 				<label for="rotation-select">Rotate:</label>
 				<select id="rotation-select">
-					<option value="0">0</option>
-					<option value="90">90</option>
-					<option value="180">180</option>
-					<option value="270">270</option>
+					<option value="0">0°</option>
+					<option value="90">90°</option>
+					<option value="180">180°</option>
+					<option value="270">270°</option>
 				</select>
 				<label class="control-toggle" for="mirror-horizontal">
 					<input id="mirror-horizontal" type="checkbox">
-					Mirror horizontal
+					Mirror H
 				</label>
 				<label class="control-toggle" for="mirror-vertical">
 					<input id="mirror-vertical" type="checkbox">
-					Mirror vertical
+					Mirror V
 				</label>
 				<label class="control-toggle" for="invert-colors">
 					<input id="invert-colors" type="checkbox">
 					Invert colors
 				</label>
+				<div class="controls-sep"></div>
 				<button id="reverse-button" type="button">Reverse text</button>
 				<button id="reset-button" type="button">Reset</button>
 			</div>
