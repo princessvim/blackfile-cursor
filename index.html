@@ -21,29 +21,22 @@
 			color: var(--text);
 			font-family: Iosevka, "Courier New", monospace;
 			font-size: 14px;
-			min-height: 100vh;
+			height: 100vh;
+			overflow: hidden;
 			margin: 0;
 			display: flex;
-			justify-content: center;
-			align-items: center;
-			padding-top: 3.5em;
+			flex-direction: column;
+			align-items: stretch;
 			box-sizing: border-box;
         }
-		.controls {
-			position: fixed;
-			top: 0;
-			left: 0;
-			right: 0;
+		header {
 			padding: 0.75em 1.5em;
-			background: rgba(23, 23, 42, 0.85);
+			background: var(--surface);
 			border-bottom: 1px solid var(--border-dim);
-			border-top: none;
-			backdrop-filter: blur(10px);
-			-webkit-backdrop-filter: blur(10px);
-			z-index: 30;
 			display: flex;
 			flex-direction: column;
 			gap: 0.5em;
+			flex-shrink: 0;
 		}
 		.controls-row {
 			display: flex;
@@ -53,8 +46,13 @@
 		}
 		content {
 			display: flex;
-			flex-direction: column;
-			align-items: center;
+			flex: 1;
+			min-height: 0;
+			overflow: auto;
+			justify-content: center;
+			align-items: flex-start;
+			padding: 1.5em;
+			box-sizing: border-box;
 		}
 		#width-slider {
 			flex: 1;
@@ -71,6 +69,7 @@
 			font-size: inherit;
 		}
 		.text-viewer {
+			margin: auto;
 			transform-origin: center;
 			z-index: 10;
 			transition: transform 260ms ease;
@@ -201,8 +200,7 @@
 	</style>
 </head>
 <body>
-    <content>
-        <div class="controls">
+    <header>
 			<div class="controls-row">
 				<label id="width-label" for="width-slider">Width: <span id="width-value">67</span> letters</label>
 				<input id="width-slider" type="range" min="10" max="400" value="67">
@@ -234,14 +232,15 @@
 				<button id="reverse-button" type="button">Reverse text</button>
 				<button id="reset-button" type="button">Reset</button>
 			</div>
-        </div>
+    </header>
+    <content>
 		<div class="text-viewer">
 			<canvas id="text-canvas"></canvas>
 		</div>
     </content>
     
     <script>
-        const text = "data:image/x-icon;base64,AAACAAEAICACAAAAAAgIAAAFgAAAEgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwcHAAAAAAAADw8PAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADw8PAAAAAAAABwcHAAAAAAAAAAAAD//////////8AAAAAAAD/////////8AAAAAAADwAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPgAAAP//8AAAAAAAP////////////////8AAAAAAAD/////////8AAAAAAA//////////8AAAAAAAAPAAAAAAAA8AAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAAA8AAAAAAA//////////8AAA==";
+        const text = "AAACAAEAICACAAAAAAgIAAAFgAAAEgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwcHAAAAAAAADw8PAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADw8PAAAAAAAABwcHAAAAAAAAAAAAD//////////8AAAAAAAD/////////8AAAAAAADwAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPgAAAP//8AAAAAAAP////////////////8AAAAAAAD/////////8AAAAAAA//////////8AAAAAAAAPAAAAAAAA8AAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAAA8AAAAAAA//////////8AAA==";
 
 		let currentText = text;
 
@@ -296,7 +295,7 @@
 
 			ctx.font = fontStr;
 			const glyphWidth = ctx.measureText("M").width;
-			const cellWidth = glyphWidth + 1;
+			const cellWidth = glyphWidth+1;
 
 			const lines = wrapText(currentText, charCount);
 			const logicalWidth = Math.ceil(charCount * cellWidth);
