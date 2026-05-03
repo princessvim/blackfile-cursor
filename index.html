@@ -43,6 +43,7 @@
 			align-items: center;
 			gap: 0.75em;
 			width: 100%;
+			white-space: nowrap;
 		}
 		.controls-sep {
 			width: 2px;
@@ -79,23 +80,26 @@
 			margin: auto;
 			transform-origin: center;
 			z-index: 10;
-			transition: transform 260ms ease;
+			transition: transform 100ms ease;
 		}
 		#text-canvas {
 			display: block;
 			border: 2px dashed var(--border-dim);
-			border-radius: 6px;
 			padding: 0.5em 0.6em 0.3em;
 		}
 
-		#rotation-select {
+		#rotate-cw-button,
+		#rotate-ccw-button,
+		#rotate-reset-button {
 			background: var(--surface-ui);
 			color: var(--text);
 			border: 1px solid var(--border-ui);
 			border-radius: 3px;
-			padding: 2px 6px;
+			padding: 2px 8px;
+			cursor: pointer;
 			font-family: inherit;
 			font-size: inherit;
+			white-space: nowrap;
 		}
 		#font-size-slider {
 			width: 90px;
@@ -119,6 +123,7 @@
 			font-family: inherit;
 			font-size: inherit;
 			cursor: pointer;
+			white-space: nowrap;
 		}
 		#reverse-button {
 			background: var(--surface-ui);
@@ -129,11 +134,13 @@
 			font-family: inherit;
 			font-size: inherit;
 			cursor: pointer;
+			white-space: nowrap;
 		}
 		.control-toggle {
 			display: inline-flex;
 			align-items: center;
 			gap: 0.35em;
+			white-space: nowrap;
 		}
 
 		input[type="range"] {
@@ -222,13 +229,11 @@
 				<input id="highlight-input" type="text" value="/" placeholder="chars">
 			</div>
 			<div class="controls-row">
-				<label for="rotation-select">Rotate:</label>
-				<select id="rotation-select">
-					<option value="0">0°</option>
-					<option value="90">90°</option>
-					<option value="180">180°</option>
-					<option value="270">270°</option>
-				</select>
+				<span>Rotate:</span>
+				<button id="rotate-ccw-button" type="button" title="-90°">-90°</button>
+				<button id="rotate-cw-button" type="button" title="+90°">+90°</button>
+				<button id="rotate-reset-button" type="button" title="Reset rotation">↺</button>
+				<div class="controls-sep"></div>
 				<label class="control-toggle" for="mirror-horizontal">
 					<input id="mirror-horizontal" type="checkbox">
 					Mirror H
@@ -237,13 +242,14 @@
 					<input id="mirror-vertical" type="checkbox">
 					Mirror V
 				</label>
+				<div class="controls-sep"></div>
 				<label class="control-toggle" for="invert-colors">
 					<input id="invert-colors" type="checkbox">
 					Invert colors
 				</label>
 				<div class="controls-sep"></div>
 				<button id="reverse-button" type="button">Reverse text</button>
-				<button id="reset-button" type="button">Reset</button>
+				<button id="reset-button" type="button">Reset all</button>
 			</div>
     </header>
     <content>
@@ -256,6 +262,7 @@
         const text = "AAACAAEAICACAAAAAAgIAAAFgAAAEgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwcHAAAAAAAADw8PAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADg4OAAAAAAAADw8PAAAAAAAABwcHAAAAAAAAAAAAD//////////8AAAAAAAD/////////8AAAAAAADwAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPAAAAP//8AAAAAAAPgAAAP//8AAAAAAAP////////////////8AAAAAAAD/////////8AAAAAAA//////////8AAAAAAAAPAAAAAAAA8AAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAADwAAAAAAAAPAAAAAAAA8AAAAAAA//////////8AAA==";
 
 		let currentText = text;
+		let rotation = 0;
 
 		const codeEditor = document.querySelector(".text-viewer");
 		const canvas = document.querySelector("#text-canvas");
@@ -265,7 +272,8 @@
 		const highlightInput = document.querySelector("#highlight-input");
 		const fontSizeSlider = document.querySelector("#font-size-slider");
 		const fontSizeNumber = document.querySelector("#font-size-number");
-		const rotationSelect = document.querySelector("#rotation-select");
+		const rotateCwButton = document.querySelector("#rotate-cw-button");
+		const rotateCcwButton = document.querySelector("#rotate-ccw-button");
 		const mirrorHorizontal = document.querySelector("#mirror-horizontal");
 		const mirrorVertical = document.querySelector("#mirror-vertical");
 		const invertColors = document.querySelector("#invert-colors");
@@ -351,7 +359,6 @@
 
 		function applyTransform() {
 			if (!codeEditor) return;
-			const rotation = rotationSelect ? Number(rotationSelect.value) : 0;
 			const scaleX = mirrorHorizontal && mirrorHorizontal.checked ? -1 : 1;
 			const scaleY = mirrorVertical && mirrorVertical.checked ? -1 : 1;
 			codeEditor.style.transform = `rotate(${rotation}deg) scale(${scaleX}, ${scaleY})`;
@@ -380,8 +387,24 @@
 				renderCanvas();
 			});
 		}
-		if (rotationSelect) {
-			rotationSelect.addEventListener("change", applyTransform);
+		if (rotateCwButton) {
+			rotateCwButton.addEventListener("click", () => {
+				rotation = rotation + 90;
+				applyTransform();
+			});
+		}
+		if (rotateCcwButton) {
+			rotateCcwButton.addEventListener("click", () => {
+				rotation = rotation - 90;
+				applyTransform();
+			});
+		}
+		const rotateResetButton = document.querySelector("#rotate-reset-button");
+		if (rotateResetButton) {
+			rotateResetButton.addEventListener("click", () => {
+				rotation = 0;
+				applyTransform();
+			});
 		}
 		if (mirrorHorizontal) {
 			mirrorHorizontal.addEventListener("change", applyTransform);
@@ -412,9 +435,7 @@
 					fontSizeSlider.value = defaults.fontSize;
 					fontSizeNumber.value = defaults.fontSize;
 				}
-				if (rotationSelect) {
-					rotationSelect.value = defaults.rotation;
-				}
+				rotation = 0;
 				if (mirrorHorizontal) {
 					mirrorHorizontal.checked = defaults.mirrorHorizontal;
 				}
