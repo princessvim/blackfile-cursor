@@ -6,9 +6,19 @@
 	<title>Document</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/iosevka@5/index.css">
 	<style>
+		:root {
+			--bg:              #0a0a10;
+			--surface:         #121222;
+			--surface-ui:      #1a1a2b;
+			--border-dim:      #20203b;
+			--border-ui:       #333355;
+			--text:            #d8d4f0;
+			--accent:          #e0306e;
+			--canvas-normal:   #23233b;
+		}
         body {
-            background-color: #000;
-			color: #eee;
+            background-color: var(--bg);
+			color: var(--text);
 			font-family: Iosevka, "Courier New", monospace;
 			font-size: 14px;
 			min-height: 100vh;
@@ -16,17 +26,18 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			padding-bottom: 3.5em;
+			padding-top: 3.5em;
 			box-sizing: border-box;
         }
 		.controls {
 			position: fixed;
-			bottom: 0;
+			top: 0;
 			left: 0;
 			right: 0;
 			padding: 0.75em 1.5em;
-			background: rgba(26, 26, 26, 0.7);
-			border-top: 1px solid #333;
+			background: rgba(23, 23, 42, 0.85);
+			border-bottom: 1px solid var(--border-dim);
+			border-top: none;
 			backdrop-filter: blur(10px);
 			-webkit-backdrop-filter: blur(10px);
 			z-index: 30;
@@ -51,9 +62,9 @@
 		}
 		#highlight-input {
 			width: 6em;
-			background: #222;
-			color: #eee;
-			border: 1px solid #555;
+			background: var(--surface-ui);
+			color: var(--text);
+			border: 1px solid var(--border-ui);
 			border-radius: 3px;
 			padding: 2px 6px;
 			font-family: inherit;
@@ -66,15 +77,15 @@
 		}
 		#text-canvas {
 			display: block;
-			border: 2px dashed #222;
+			border: 2px dashed var(--border-dim);
 			border-radius: 6px;
 			padding: 0.5em 0.6em 0.3em;
 		}
 
 		#rotation-select {
-			background: #222;
-			color: #eee;
-			border: 1px solid #555;
+			background: var(--surface-ui);
+			color: var(--text);
+			border: 1px solid var(--border-ui);
 			border-radius: 3px;
 			padding: 2px 6px;
 			font-family: inherit;
@@ -93,9 +104,9 @@
 		}
 		#reset-button {
 			margin-left: auto;
-			background: #222;
-			color: #eee;
-			border: 1px solid #666;
+			background: var(--surface-ui);
+			color: var(--text);
+			border: 1px solid var(--border-ui);
 			border-radius: 3px;
 			padding: 2px 10px;
 			font-family: inherit;
@@ -103,9 +114,9 @@
 			cursor: pointer;
 		}
 		#reverse-button {
-			background: #222;
-			color: #eee;
-			border: 1px solid #666;
+			background: var(--surface-ui);
+			color: var(--text);
+			border: 1px solid var(--border-ui);
 			border-radius: 3px;
 			padding: 2px 10px;
 			font-family: inherit;
@@ -116,6 +127,74 @@
 			display: inline-flex;
 			align-items: center;
 			gap: 0.35em;
+		}
+
+		input[type="range"] {
+			-webkit-appearance: none;
+			appearance: none;
+			height: 3px;
+			background: var(--border-ui);
+			border-radius: 2px;
+			outline: none;
+			cursor: pointer;
+		}
+		input[type="range"]::-webkit-slider-runnable-track {
+			background: var(--border-ui);
+			height: 3px;
+			border-radius: 2px;
+		}
+		input[type="range"]::-moz-range-track {
+			background: var(--border-ui);
+			height: 3px;
+			border-radius: 2px;
+		}
+		input[type="range"]::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background: var(--accent);
+			cursor: pointer;
+			border: none;
+			margin-top: -4.5px;
+		}
+		input[type="range"]::-moz-range-thumb {
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background: var(--accent);
+			cursor: pointer;
+			border: none;
+		}
+
+		input[type="checkbox"] {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 13px;
+			height: 13px;
+			background: var(--surface-ui);
+			border: 1px solid var(--border-ui);
+			border-radius: 3px;
+			cursor: pointer;
+			position: relative;
+			flex-shrink: 0;
+		}
+		input[type="checkbox"]:checked {
+			background: var(--accent);
+			border-color: var(--accent);
+		}
+		input[type="checkbox"]:checked::after {
+			content: "";
+			position: absolute;
+			left: 3px;
+			top: 0px;
+			width: 5px;
+			height: 8px;
+			border: 2px solid var(--bg);
+			border-top: none;
+			border-left: none;
+			transform: rotate(45deg);
 		}
 
 
@@ -131,8 +210,8 @@
 				<input id="highlight-input" type="text" value="/" placeholder="chars to highlight">
 			</div>
 			<div class="controls-row">
-				<label id="font-size-label" for="font-size-slider">Font size: <span id="font-size-value">16</span>px</label>
-				<input id="font-size-slider" type="range" min="6" max="48" value="16">
+				<label id="font-size-label" for="font-size-slider">Font size: <span id="font-size-value">18</span>px</label>
+				<input id="font-size-slider" type="range" min="6" max="48" value="18">
 				<label for="rotation-select">Rotate:</label>
 				<select id="rotation-select">
 					<option value="0">0</option>
@@ -183,7 +262,7 @@
 		const defaults = {
 			width: "67",
 			highlight: "/",
-			fontSize: "16",
+			fontSize: "18",
 			rotation: "0",
 			mirrorHorizontal: false,
 			mirrorVertical: false,
@@ -237,8 +316,11 @@
 
 			const highlightChars = new Set(highlightInput ? highlightInput.value : "/");
 			const isInverted = invertColors && invertColors.checked;
-			const normalColor = isInverted ? "#00ffaa" : "#222";
-			const highlightColor = isInverted ? "#222" : "#00ffaa";
+			const style = getComputedStyle(document.documentElement);
+			const accentColor = style.getPropertyValue('--accent').trim();
+			const canvasNormal = style.getPropertyValue('--canvas-normal').trim();
+			const normalColor = isInverted ? accentColor : canvasNormal;
+			const highlightColor = isInverted ? canvasNormal : accentColor;
 
 			for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
 				const line = lines[lineIdx];
