@@ -211,8 +211,8 @@
     <header>
 			<div class="controls-row">
 				<label for="width-number">Row width:</label>
-				<input id="width-number" type="number" min="10" max="400" value="67">
-				<input id="width-slider" type="range" min="10" max="400" value="67">
+				<input id="width-number" type="number" min="4" max="400" value="67">
+				<input id="width-slider" type="range" min="4" max="400" value="67">
 				<div class="controls-sep"></div>
 				<label for="font-size-number">Font size:</label>
 				<input id="font-size-number" type="number" min="6" max="48" value="18">
@@ -305,6 +305,7 @@
 			const lineHeight = fontSize * 1.45;
 			const padding = 0;
 			const fontStr = `${fontSize}px "Iosevka", "Courier New", monospace`;
+			const boldFontStr = `bold ${fontSize}px "Iosevka", "Courier New", monospace`;
 
 			ctx.font = fontStr;
 			const glyphWidth = ctx.measureText("M").width;
@@ -338,9 +339,11 @@
 				const line = lines[lineIdx];
 				for (let charIdx = 0; charIdx < line.length; charIdx++) {
 					const char = line[charIdx];
+					const isHighlighted = highlightChars.has(char);
 					const x = charIdx * cellWidth + cellWidth / 2;
 					const y = lineIdx * lineHeight + lineHeight / 2;
-					ctx.fillStyle = highlightChars.has(char) ? highlightColor : normalColor;
+					ctx.font = isHighlighted ? boldFontStr : fontStr;
+					ctx.fillStyle = isHighlighted ? highlightColor : normalColor;
 					ctx.fillText(char, x, y);
 				}
 			}
