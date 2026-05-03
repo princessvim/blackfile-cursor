@@ -1,5 +1,7 @@
 Play with it here: https://princessvim.github.io/blackfile-cursor/
 
+![screenshot](screen.png)
+
 # blackfile-cursor
 
 A browser-based tool for inspecting base64-encoded data visually, related to the broken cursor (part of Filian ARG).
