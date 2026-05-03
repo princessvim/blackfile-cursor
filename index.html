@@ -100,19 +100,15 @@
 		#font-size-slider {
 			width: 90px;
 		}
-		#font-size-label {
-			display: inline-block;
-			min-width: 90px;
-		}
-		#font-size-value {
-			font-weight: bold;
-		}
-		#width-label {
-			display: inline-block;
-			width: 100px;
-		}
-		#width-value {
-			font-weight: bold;
+		input[type="number"] {
+			width: 5ch;
+			background: var(--surface-ui);
+			color: var(--text);
+			border: 1px solid var(--border-ui);
+			border-radius: 3px;
+			padding: 2px 6px;
+			font-family: inherit;
+			font-size: inherit;
 		}
 		#reset-button {
 			background: var(--surface-ui);
@@ -214,10 +210,12 @@
 <body>
     <header>
 			<div class="controls-row">
-				<label id="width-label" for="width-slider">Row width: <span id="width-value">67</span></label>
+				<label for="width-number">Row width:</label>
+				<input id="width-number" type="number" min="10" max="400" value="67">
 				<input id="width-slider" type="range" min="10" max="400" value="67">
 				<div class="controls-sep"></div>
-				<label id="font-size-label" for="font-size-slider">Font size: <span id="font-size-value">18</span></label>
+				<label for="font-size-number">Font size:</label>
+				<input id="font-size-number" type="number" min="6" max="48" value="18">
 				<input id="font-size-slider" type="range" min="6" max="48" value="18">
 				<div class="controls-sep"></div>
 				<label for="highlight-input">Highlight:</label>
@@ -263,10 +261,10 @@
 		const canvas = document.querySelector("#text-canvas");
 		const ctx = canvas ? canvas.getContext("2d") : null;
 		const widthSlider = document.querySelector("#width-slider");
-		const widthValue = document.querySelector("#width-value");
+		const widthNumber = document.querySelector("#width-number");
 		const highlightInput = document.querySelector("#highlight-input");
 		const fontSizeSlider = document.querySelector("#font-size-slider");
-		const fontSizeValue = document.querySelector("#font-size-value");
+		const fontSizeNumber = document.querySelector("#font-size-number");
 		const rotationSelect = document.querySelector("#rotation-select");
 		const mirrorHorizontal = document.querySelector("#mirror-horizontal");
 		const mirrorVertical = document.querySelector("#mirror-vertical");
@@ -356,18 +354,26 @@
 			codeEditor.style.transform = `rotate(${rotation}deg) scale(${scaleX}, ${scaleY})`;
 		}
 
-		if (widthSlider && widthValue) {
+		if (widthSlider && widthNumber) {
 			widthSlider.addEventListener("input", () => {
-				widthValue.textContent = widthSlider.value;
+				widthNumber.value = widthSlider.value;
+				renderCanvas();
+			});
+			widthNumber.addEventListener("input", () => {
+				widthSlider.value = widthNumber.value;
 				renderCanvas();
 			});
 		}
 		if (highlightInput) {
 			highlightInput.addEventListener("input", renderCanvas);
 		}
-		if (fontSizeSlider && fontSizeValue) {
+		if (fontSizeSlider && fontSizeNumber) {
 			fontSizeSlider.addEventListener("input", () => {
-				fontSizeValue.textContent = fontSizeSlider.value;
+				fontSizeNumber.value = fontSizeSlider.value;
+				renderCanvas();
+			});
+			fontSizeNumber.addEventListener("input", () => {
+				fontSizeSlider.value = fontSizeNumber.value;
 				renderCanvas();
 			});
 		}
@@ -392,16 +398,16 @@
 		if (resetButton) {
 			resetButton.addEventListener("click", () => {
 				currentText = text;
-				if (widthSlider && widthValue) {
+				if (widthSlider && widthNumber) {
 					widthSlider.value = defaults.width;
-					widthValue.textContent = defaults.width;
+					widthNumber.value = defaults.width;
 				}
 				if (highlightInput) {
 					highlightInput.value = defaults.highlight;
 				}
-				if (fontSizeSlider && fontSizeValue) {
+				if (fontSizeSlider && fontSizeNumber) {
 					fontSizeSlider.value = defaults.fontSize;
-					fontSizeValue.textContent = defaults.fontSize;
+					fontSizeNumber.value = defaults.fontSize;
 				}
 				if (rotationSelect) {
 					rotationSelect.value = defaults.rotation;
